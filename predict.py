@@ -1,7 +1,8 @@
 import os
-from typing import List
-
 import torch
+
+from typing import List
+from compel import Compel
 from cog import BasePredictor, Input, Path
 from diffusers import (
     StableDiffusionPipeline,
@@ -16,9 +17,7 @@ from diffusers.pipelines.stable_diffusion.safety_checker import (
     StableDiffusionSafetyChecker,
 )
 
-# MODEL_ID refers to a diffusers-compatible model on HuggingFace
-# e.g. prompthero/openjourney-v2, wavymulder/Analog-Diffusion, etc
-MODEL_ID = "stabilityai/stable-diffusion-2-1"
+MODEL_ID = "rehanhaider/story-boy-1"
 MODEL_CACHE = "diffusers-cache"
 SAFETY_MODEL_ID = "CompVis/stable-diffusion-safety-checker"
 
@@ -38,6 +37,9 @@ class Predictor(BasePredictor):
             cache_dir=MODEL_CACHE,
             local_files_only=True,
         ).to("cuda")
+
+        self.compel_proc = Compel(tokenizer=self.pipe.tokenizer,
+                                  text_encoder=self.pipe.text_encoder)
 
     @torch.inference_mode()
     def predict(
@@ -104,16 +106,19 @@ class Predictor(BasePredictor):
             scheduler, self.pipe.scheduler.config)
 
         generator = torch.Generator("cuda").manual_seed(seed)
+
+        prompt_embeds = self.compel_proc(prompt)
+        negative_prompt_embeds = self.compel_proc(negative_prompt)
+
         output = self.pipe(
-            prompt=[prompt] * num_outputs if prompt is not None else None,
-            negative_prompt=[negative_prompt] * num_outputs
-            if negative_prompt is not None
-            else None,
             width=width,
             height=height,
-            guidance_scale=guidance_scale,
             generator=generator,
+            prompt_embeds=prompt_embeds,
+            guidance_scale=guidance_scale,
+            num_images_per_prompt=num_outputs,
             num_inference_steps=num_inference_steps,
+            negative_prompt_embeds=negative_prompt_embeds,
         )
 
         output_paths = []
