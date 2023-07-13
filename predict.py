@@ -16,6 +16,8 @@ from diffusers.pipelines.stable_diffusion.safety_checker import (
     StableDiffusionSafetyChecker,
 )
 
+from compel import Compel
+
 # MODEL_ID refers to a diffusers-compatible model on HuggingFace
 # e.g. prompthero/openjourney-v2, wavymulder/Analog-Diffusion, etc
 MODEL_ID = "rehanhaider/story-boy-1"
@@ -38,6 +40,9 @@ class Predictor(BasePredictor):
             cache_dir=MODEL_CACHE,
             local_files_only=True,
         ).to("cuda")
+
+        self.compel_proc = Compel(
+            tokenizer=self.pipe.tokenizer, text_encoder=self.pipe.text_encoder)
 
     @torch.inference_mode()
     def predict(
