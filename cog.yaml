@@ -12,6 +12,6 @@ build:
     - "huggingface-hub==0.16.4"
     - "safetensors==0.3.1"
     - "compel==1.2.1"
-    - "invisible-watermark"
+    - "invisible-watermark>=2.0"
 
 predict: "predict.py:Predictor"
