@@ -1,8 +1,7 @@
 import os
-import torch
-
 from typing import List
-from compel import Compel
+
+import torch
 from cog import BasePredictor, Input, Path
 from diffusers import (
     StableDiffusionPipeline,
@@ -17,10 +16,11 @@ from diffusers.pipelines.stable_diffusion.safety_checker import (
     StableDiffusionSafetyChecker,
 )
 
-MODEL_ID = "rehanhaider/story-boy-1"
+# MODEL_ID refers to a diffusers-compatible model on HuggingFace
+# e.g. prompthero/openjourney-v2, wavymulder/Analog-Diffusion, etc
+MODEL_ID = "stabilityai/stable-diffusion-2-1"
 MODEL_CACHE = "diffusers-cache"
 SAFETY_MODEL_ID = "CompVis/stable-diffusion-safety-checker"
-
 
 class Predictor(BasePredictor):
     def setup(self):
@@ -38,9 +38,6 @@ class Predictor(BasePredictor):
             local_files_only=True,
         ).to("cuda")
 
-        self.compel_proc = Compel(tokenizer=self.pipe.tokenizer,
-                                  text_encoder=self.pipe.text_encoder)
-
     @torch.inference_mode()
     def predict(
         self,
@@ -54,14 +51,12 @@ class Predictor(BasePredictor):
         ),
         width: int = Input(
             description="Width of output image. Maximum size is 1024x768 or 768x1024 because of memory limits",
-            choices=[128, 256, 384, 448, 512, 576,
-                     640, 704, 768, 832, 896, 960, 1024],
+            choices=[128, 256, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1024],
             default=768,
         ),
         height: int = Input(
             description="Height of output image. Maximum size is 1024x768 or 768x1024 because of memory limits",
-            choices=[128, 256, 384, 448, 512, 576,
-                     640, 704, 768, 832, 896, 960, 1024],
+            choices=[128, 256, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1024],
             default=768,
         ),
         num_outputs: int = Input(
@@ -102,23 +97,19 @@ class Predictor(BasePredictor):
                 "Maximum size is 1024x768 or 768x1024 pixels, because of memory limits. Please select a lower width or height."
             )
 
-        self.pipe.scheduler = make_scheduler(
-            scheduler, self.pipe.scheduler.config)
+        self.pipe.scheduler = make_scheduler(scheduler, self.pipe.scheduler.config)
 
         generator = torch.Generator("cuda").manual_seed(seed)
-
-        prompt_embeds = self.compel_proc(prompt)
-        negative_prompt_embeds = self.compel_proc(negative_prompt)
-
         output = self.pipe(
+            prompt=[prompt] * num_outputs if prompt is not None else None,
+            negative_prompt=[negative_prompt] * num_outputs
+            if negative_prompt is not None
+            else None,
             width=width,
             height=height,
-            generator=generator,
-            prompt_embeds=prompt_embeds,
             guidance_scale=guidance_scale,
-            num_images_per_prompt=num_outputs,
+            generator=generator,
             num_inference_steps=num_inference_steps,
-            negative_prompt_embeds=negative_prompt_embeds,
         )
 
         output_paths = []
