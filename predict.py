@@ -108,16 +108,18 @@ class Predictor(BasePredictor):
         self.pipe.scheduler = make_scheduler(
             scheduler, self.pipe.scheduler.config)
 
+        prompt_embeds = self.compel_proc(prompt)
+        negative_embeds = self.compel_proc(negative_prompt)
         generator = torch.Generator("cuda").manual_seed(seed)
+
         output = self.pipe(
-            prompt=[prompt] * num_outputs if prompt is not None else None,
-            negative_prompt=[negative_prompt] * num_outputs
-            if negative_prompt is not None
-            else None,
+            prompt_embeds=prompt_embeds,
+            negative_prompt_embeds=negative_embeds,
             width=width,
             height=height,
             guidance_scale=guidance_scale,
             generator=generator,
+            num_images_per_prompt=num_outputs,
             num_inference_steps=num_inference_steps,
         )
 
