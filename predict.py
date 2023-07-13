@@ -18,9 +18,10 @@ from diffusers.pipelines.stable_diffusion.safety_checker import (
 
 # MODEL_ID refers to a diffusers-compatible model on HuggingFace
 # e.g. prompthero/openjourney-v2, wavymulder/Analog-Diffusion, etc
-MODEL_ID = "stabilityai/stable-diffusion-2-1"
+MODEL_ID = "rehanhaider/story-boy-1"
 MODEL_CACHE = "diffusers-cache"
 SAFETY_MODEL_ID = "CompVis/stable-diffusion-safety-checker"
+
 
 class Predictor(BasePredictor):
     def setup(self):
@@ -51,12 +52,14 @@ class Predictor(BasePredictor):
         ),
         width: int = Input(
             description="Width of output image. Maximum size is 1024x768 or 768x1024 because of memory limits",
-            choices=[128, 256, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1024],
+            choices=[128, 256, 384, 448, 512, 576,
+                     640, 704, 768, 832, 896, 960, 1024],
             default=768,
         ),
         height: int = Input(
             description="Height of output image. Maximum size is 1024x768 or 768x1024 because of memory limits",
-            choices=[128, 256, 384, 448, 512, 576, 640, 704, 768, 832, 896, 960, 1024],
+            choices=[128, 256, 384, 448, 512, 576,
+                     640, 704, 768, 832, 896, 960, 1024],
             default=768,
         ),
         num_outputs: int = Input(
@@ -97,7 +100,8 @@ class Predictor(BasePredictor):
                 "Maximum size is 1024x768 or 768x1024 pixels, because of memory limits. Please select a lower width or height."
             )
 
-        self.pipe.scheduler = make_scheduler(scheduler, self.pipe.scheduler.config)
+        self.pipe.scheduler = make_scheduler(
+            scheduler, self.pipe.scheduler.config)
 
         generator = torch.Generator("cuda").manual_seed(seed)
         output = self.pipe(
