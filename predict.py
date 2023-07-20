@@ -65,7 +65,7 @@ class Predictor(BasePredictor):
         num_outputs: int = Input(
             description="Number of images to output.",
             ge=1,
-            le=4,
+            le=8,
             default=1,
         ),
         num_inference_steps: int = Input(
