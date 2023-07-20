@@ -5,12 +5,7 @@ import torch
 from cog import BasePredictor, Input, Path
 from diffusers import (
     StableDiffusionPipeline,
-    PNDMScheduler,
-    LMSDiscreteScheduler,
-    DDIMScheduler,
-    EulerDiscreteScheduler,
-    EulerAncestralDiscreteScheduler,
-    DPMSolverMultistepScheduler,
+    EulerDiscreteScheduler,DPMSolverSDEScheduler,DEISMultistepScheduler,UniPCMultistepScheduler,KDPM2AncestralDiscreteScheduler,PNDMScheduler,EulerAncestralDiscreteScheduler,DPMSolverSinglestepScheduler,DDPMScheduler,DPMSolverMultistepScheduler,LMSDiscreteScheduler,DDIMScheduler,KDPM2DiscreteScheduler,HeunDiscreteScheduler,EulerDiscreteScheduler,
 )
 from diffusers.pipelines.stable_diffusion.safety_checker import (
     StableDiffusionSafetyChecker,
@@ -82,12 +77,21 @@ class Predictor(BasePredictor):
         scheduler: str = Input(
             default="DPMSolverMultistep",
             choices=[
-                "DDIM",
-                "K_EULER",
-                "DPMSolverMultistep",
-                "K_EULER_ANCESTRAL",
-                "PNDM",
-                "KLMS",
+                "EulerDiscreteScheduler",
+                "DPMSolverSDEScheduler",
+                "DEISMultistepScheduler",
+                "UniPCMultistepScheduler",
+                "KDPM2AncestralDiscreteScheduler",
+                "PNDMScheduler",
+                "EulerAncestralDiscreteScheduler",
+                "DPMSolverSinglestepScheduler",
+                "DDPMScheduler",
+                "DPMSolverMultistepScheduler",
+                "LMSDiscreteScheduler",
+                "DDIMScheduler",
+                "KDPM2DiscreteScheduler",
+                "HeunDiscreteScheduler",
+                "EulerDiscreteScheduler",
             ],
             description="Choose a scheduler.",
         ),
