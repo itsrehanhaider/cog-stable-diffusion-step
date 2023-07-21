@@ -145,19 +145,18 @@ class Predictor(BasePredictor):
 
 def make_scheduler(name, config):
     return {
-        "PNDM": PNDMScheduler.from_config(config),
-        "KLMS": LMSDiscreteScheduler.from_config(config),
-        "DDIM": DDIMScheduler.from_config(config),
-        "K_EULER": EulerDiscreteScheduler.from_config(config),
-        "K_EULER_ANCESTRAL": EulerAncestralDiscreteScheduler.from_config(config),
-        "DPMSolverMultistep": DPMSolverMultistepScheduler.from_config(config),
+        "EulerDiscreteScheduler": EulerDiscreteScheduler.from_config(config),
         "DPMSolverSDEScheduler": DPMSolverSDEScheduler.from_config(config),
         "DEISMultistepScheduler": DEISMultistepScheduler.from_config(config),
         "UniPCMultistepScheduler": UniPCMultistepScheduler.from_config(config),
         "KDPM2AncestralDiscreteScheduler": KDPM2AncestralDiscreteScheduler.from_config(config),
+        "PNDMScheduler": PNDMScheduler.from_config(config),
+        "EulerAncestralDiscreteScheduler": EulerAncestralDiscreteScheduler.from_config(config),
         "DPMSolverSinglestepScheduler": DPMSolverSinglestepScheduler.from_config(config),
         "DDPMScheduler": DDPMScheduler.from_config(config),
+        "DPMSolverMultistepScheduler": DPMSolverMultistepScheduler.from_config(config),
+        "LMSDiscreteScheduler": LMSDiscreteScheduler.from_config(config),
+        "DDIMScheduler": DDIMScheduler.from_config(config),
         "KDPM2DiscreteScheduler": KDPM2DiscreteScheduler.from_config(config),
         "HeunDiscreteScheduler": HeunDiscreteScheduler.from_config(config),
-
     }[name]
