@@ -13,8 +13,7 @@ from diffusers.pipelines.stable_diffusion.safety_checker import (
 
 from compel import Compel
 
-# MODEL_ID refers to a diffusers-compatible model on HuggingFace
-# e.g. prompthero/openjourney-v2, wavymulder/Analog-Diffusion, etc
+
 MODEL_ID = "rehanhaider/story-boy-1"
 MODEL_CACHE = "diffusers-cache"
 SAFETY_MODEL_ID = "CompVis/stable-diffusion-safety-checker"
@@ -69,7 +68,7 @@ class Predictor(BasePredictor):
             default=1,
         ),
         num_inference_steps: int = Input(
-            description="Number of denoising steps", ge=1, le=500, default=50
+            description="Number of denoising steps", ge=1, le=500, default=21
         ),
         guidance_scale: float = Input(
             description="Scale for classifier-free guidance", ge=1, le=20, default=7.5
@@ -152,4 +151,13 @@ def make_scheduler(name, config):
         "K_EULER": EulerDiscreteScheduler.from_config(config),
         "K_EULER_ANCESTRAL": EulerAncestralDiscreteScheduler.from_config(config),
         "DPMSolverMultistep": DPMSolverMultistepScheduler.from_config(config),
+        "DPMSolverSDEScheduler": DPMSolverSDEScheduler.from_config(config),
+        "DEISMultistepScheduler": DEISMultistepScheduler.from_config(config),
+        "UniPCMultistepScheduler": UniPCMultistepScheduler.from_config(config),
+        "KDPM2AncestralDiscreteScheduler": KDPM2AncestralDiscreteScheduler.from_config(config),
+        "DPMSolverSinglestepScheduler": DPMSolverSinglestepScheduler.from_config(config),
+        "DDPMScheduler": DDPMScheduler.from_config(config),
+        "KDPM2DiscreteScheduler": KDPM2DiscreteScheduler.from_config(config),
+        "HeunDiscreteScheduler": HeunDiscreteScheduler.from_config(config),
+
     }[name]
